@@ -1,0 +1,127 @@
+NOTES ON SQLITE 
+# dbvis - app for db
+# when a table's id is NOT auto increment populating with data will give errors 
+
+create table - CREATE TABLE table_name 
+insert - adds data to the table created 
+where - gives parameters that narrows down options 
+select - select data from table to display 
+update - make changes to the values of the table 
+alter - makes changes to the table. for instance add headers 
+drop table - deletes a table if it exist 
+
+foreign keys != primary keys 
+foreign keys need refefrence 
+naming senistive 
+foreign keys need to be enabled 
+composite foreign keys is a table having more than one foreign key 
+
+COMMANDS & SYNATAX FOR SQLITE 
+
+.tables - view tables
+
+Dispay settings 
+.mode column 
+.header yes
+
+Activate Foreign Keys 
+PRAGMA foreign_keys;
+PRAGMA foreign_keys = ON
+
+WORKBOOK
+
+SQLITE ERRORS 
+Error: no such table: main.code - The error you're encountering is "no such table: main.code". This error occurs because SQLite cannot find the table named "code" in the "main" database.
+
+Foreign key mismatch - there is a problem with the foreign key constraint in the "flights" table. Specifically, SQLite is indicating that the values being inserted into the "origin_id" and "destination_id" columns of the "flights" table do not match any values in the referenced table
+
+DBVIS 
+	>> create a database connection 
+ 	>> select the path of the DB
+	>> references
+
+SQLITE SCRIPTS
+
+CREATE TABLE flights (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	origin TEXT NOT NULL,
+	destination TEXT NOT NULL, 
+	duration INTEGER NOT NULL
+);
+INSERT INTO flights (origin, destination, duration) VALUES ("London", "Milan", 115);
+INSERT INTO flights (origin, destination, duration) VALUES("London", "Accra", 395);
+INSERT INTO flights (origin, destination, duration) VALUES ("Paris", "Dubai", 405);
+INSERT INTO flights (origin, destination, duration) VALUES ("Berlin", "New York", 565);
+INSERT INTO flights (origin, destination, duration) VALUES ("London", "Tokyo", 815);
+INSERT INTO flights (origin, destination, duration) VALUES ("New York", "Kingston", 230);
+
+
+CREATE TABLE flights (
+	Id INTEGER PRIMARY KEY AUTOINCREMENT,
+	origin TEXT NOT NULL,
+	origin_code TEXT NOT NULL,
+	destination TEXT NOT NULL, 
+	destination_code TEXT NOT NULL,
+	FOREIGN KEY (origin) REFERENCES flight (origin)
+	FOREIGN KEY (destination) REFERENCES flight (destination)
+);
+INSERT INTO airports (origin, origin_code, destination, destination_code) VALUES ("London", "STN", "Milan", "BGY");
+INSERT INTO airports (origin, origin_code, destination, destination_code) VALUES ("London", "LGW", "Accra", "ACC");
+INSERT INTO airports (origin, origin_code, destination, destination_code) VALUES ("Paris", "CDG", "Dubai", "DXB");
+INSERT INTO airports (origin, origin_code, destination, destination_code) VALUES ("Berlin", "BER", "New York", "EWR");
+INSERT INTO airports (origin, origin_code, destination, destination_code) VALUES ("London", "LHR", "Tokyo", "HND");
+INSERT INTO airports (origin, origin_code, destination, destination_code) VALUES ("New York", "JFK", "Kingston ", "KIN");
+
+ALTER TABLE flights RENAME TO flights_summarised;
+ALTER TABLE airports RENAME TO flights_main;
+
+ALTER TABLE flights_main 
+	ADD duration INTEGER;
+
+UPDATE flights_main 
+	SET duration = 395
+	WHERE Id = 2 
+	AND destination = "Accra";
+
+CREATE TABLE airports (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	code TEXT NOT NULL, 
+	city TEXT NOT NULL,
+	FOREIGN KEY (code) REFERENCES flights_main (origin_code, destination_code)
+);
+
+CREATE TABLE airports (
+	id INTEGER PRIMARY KEY AUTOINCREMENT, 
+	code TEXT NOT NULL,
+	name TEXT NOT NULL,
+	city TXT NOT NULL
+);
+INSERT INTO airports (code, name, city) VALUES ("STN","Stansted", "London");
+INSERT INTO airports (code, name, city) VALUES ("LGW","Gatwick", "London");
+INSERT INTO airports (code, name, city) VALUES ("LHR","Heathrow", "London");
+INSERT INTO airports (code, name, city) VALUES ("CDG","Charles-De-Gaulle", "Paris");
+INSERT INTO airports (code, name, city) VALUES ("BGY","Milan Bergamo", "Bergamo");
+INSERT INTO airports (code, name, city) VALUES ("BER","Berlin", "Berlin");
+INSERT INTO airports (code, name, city) VALUES ("JFK","John F Kennedy", "New York");
+INSERT INTO airports (code, name, city) VALUES ("ACC","Kotoka", "Accra");
+INSERT INTO airports (code, name, city) VALUES ("KIN","Norman Manley", "Kingston");
+INSERT INTO airports (code, name, city) VALUES ("Hnd","Haneda", "Tokyo");
+INSERT INTO airports (code, name, city) VALUES ("DXB","Dubai International Airport", "Dubai");
+
+
+CREATE TABLE flights (
+	id INTEGER PRIMARY KEY AUTOINCREMENT, 
+	origin_id INTEGER,
+	destination_id INTEGER,
+	duration INTEGER NOT NULL,
+	FOREIGN KEY (origin_id) REFERENCES airports (id),
+	FOREIGN KEY (destination_id) REFERENCES airports (id)
+); # this create a table with to foreign keys referencing the same column from another table 
+
+
+INSERT INTO flights (origin_id, destination_id, duration) VALUES (1, 5, 115);
+INSERT INTO flights (origin_id, destination_id, duration) VALUES (2, 8, 395);
+INSERT INTO flights (origin_id, destination_id, duration) VALUES (4, 11, 405);
+INSERT INTO flights (origin_id, destination_id, duration) VALUES (6, 7, 565);
+INSERT INTO flights (origin_id, destination_id, duration) VALUES (3, 10, 815);
+INSERT INTO flights (origin_id, destination_id, duration) VALUES (7, 9, 230);
